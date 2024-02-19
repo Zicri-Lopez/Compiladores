@@ -1,0 +1,143 @@
+import tkinter as tk
+import ply.lex as lex
+
+tokens = [
+    'Reservado',
+    'Identificador',
+    'ParentesisA',
+    'ParentesisC',
+    'CorcheteA',
+    'CorcheteC',
+    'llaveA',
+    'llaveC',
+    'puntoyc',
+    'operadori',
+    'igual',
+    'Numero',
+    'menorq',
+    'punto',
+]
+
+t_Reservado = r'(static|void|burbuja|agrego|for)'
+t_Identificador = r'[a-zA-Z_][a-zA-Z0-9_]*'
+t_puntoyc=r'[;]'
+t_operadori=r'[++]'
+t_ParentesisA=r'[(]'
+t_ParentesisC=r'[)]'
+t_CorcheteA=r'[[]'
+t_CorcheteC=r'[]]'
+t_llaveA =r'[{]'
+t_llaveC =r'[}]'
+t_igual =r'[=]'
+t_menorq =r'[<]'
+t_punto =r'[.]'
+t_Numero = r'\d+|\d+\.\d+'
+
+t_ignore = ' \t'
+
+lexer = lex.lex()
+
+def analizar(entrada):
+    lexer.input(entrada)
+    identificadores = []
+
+    while True:
+        token = lexer.token()
+        if not token:
+            break
+
+        if token.type == 'Reservado':
+            identificadores.append(f"Reservado:    {token.value}")        
+        elif token.type == 'Identificador':
+            identificadores.append(f"Identificador:    {token.value}")
+        elif token.type == 'ParentesisA':
+            identificadores.append(f"Parentesis Abertura:    {token.value}")
+        elif token.type == 'ParentesisC':
+            identificadores.append(f"Parentesis de Cierre:    {token.value}")
+        elif token.type == 'CorcheteA':
+            identificadores.append(f"Corchete de Abertura:    {token.value}")        
+        elif token.type == 'CorcheteC':
+            identificadores.append(f"Corchete de Cierre:    {token.value}")            
+        elif token.type == 'llaveA':
+            identificadores.append(f"Llave de Abertura:    {token.value}") 
+        elif token.type == 'llaveC':
+            identificadores.append(f"Llave de Cierre:    {token.value}") 
+        elif token.type == 'puntoyc':
+            identificadores.append(f"Punto y coma:    {token.value}") 
+        elif token.type == 'operadori':
+            identificadores.append(f"Operrador de Incremento:    {token.value}")
+        elif token.type == 'igual':
+            identificadores.append(f"igual:    {token.value}") 
+        elif token.type == 'Numero':
+            identificadores.append(f"Numero:   {token.value}")
+        elif token.type == 'Menor que':
+            identificadores.append(f"Menor que:   {token.value}")
+        elif token.type == 'punto':
+            identificadores.append(f"Punto:   {token.value}")
+    return identificadores
+
+def analizar_codigo():
+    codigo = entrada_texto.get("1.0", tk.END)
+    lineas = codigo.split("\n")
+    identificadores_totales = []
+
+    for i, linea in enumerate(lineas):
+        identificadores_linea = analizar(linea)
+        for identificador in identificadores_linea:
+            identificadores_totales.append((i + 1, identificador))
+
+    resultado_texto.delete("1.0", tk.END)
+
+    for numero_linea, identificador in identificadores_totales:
+        resultado_texto.insert(tk.END, f"Línea {numero_linea}\n{identificador}\n")
+
+    numero_reservadas = len([identificador for _, identificador in identificadores_totales if identificador.startswith("Reservado")])
+    resultado_texto.insert(tk.END, f"\nTotal de ReservadO: {numero_reservadas}\n")
+
+    numero_Identificador = len([identificador for _, identificador in identificadores_totales if identificador.startswith("Identificador")])
+    resultado_texto.insert(tk.END, f"\nTotal de Identificador: {numero_Identificador}\n")
+
+    numero_Identificador = len([identificador for _, identificador in identificadores_totales if identificador.startswith("Parentesis de Cierre")])
+    resultado_texto.insert(tk.END, f"\nTotal de Parentesis de Cierre: {numero_Identificador}\n")
+
+    numero_Identificador = len([identificador for _, identificador in identificadores_totales if identificador.startswith("Corchete de Abertura")])
+    resultado_texto.insert(tk.END, f"\nTotal de Corchete de Abertura: {numero_Identificador}\n")
+
+    numero_Identificador = len([identificador for _, identificador in identificadores_totales if identificador.startswith("Corchete de Cierre")])
+    resultado_texto.insert(tk.END, f"\nTotal de Corchete de Cierre: {numero_Identificador}\n")
+    
+    numero_Identificador = len([identificador for _, identificador in identificadores_totales if identificador.startswith("Llave de Abertura")])
+    resultado_texto.insert(tk.END, f"\nTotal de Llave de Abertura: {numero_Identificador}\n")
+
+    numero_Identificador = len([identificador for _, identificador in identificadores_totales if identificador.startswith("Llave de Cierre:")])
+    resultado_texto.insert(tk.END, f"\nTotal de Llave de Cierre: {numero_Identificador}\n")
+
+    numero_Identificador = len([identificador for _, identificador in identificadores_totales if identificador.startswith("Punto y coma:")])
+    resultado_texto.insert(tk.END, f"\nTotal de Punto y coma: {numero_Identificador}\n")
+
+    numero_Identificador = len([identificador for _, identificador in identificadores_totales if identificador.startswith("igual:")])
+    resultado_texto.insert(tk.END, f"\nTotal de igual: {numero_Identificador}\n")
+
+    numero_Numero = len([identificador for _, identificador in identificadores_totales if identificador.startswith("Numero")])
+    resultado_texto.insert(tk.END, f"\nTotal de Numero: {numero_Numero}\n")
+
+    
+ventana = tk.Tk()
+ventana.geometry("900x580")
+ventana.title("Analizador Lexico")
+ventana.config(bg="#12657f")
+
+entrada_texto = tk.Text(ventana, font=("Arial", 12), bg="white", fg="black", height=20, width=40)
+entrada_texto.place(x=100, y=100)
+entrada_texto.configure(insertbackground="Black")
+
+resultado_texto = tk.Text(ventana, font=("Arial", 12), bg="white", fg="black", height=20, width=40)
+resultado_texto.place(x=500, y=100)
+
+boton_analizar = tk.Button(ventana, text="Analizar", font=("Arial", 12), bg="#121b29", fg="blue", command=analizar_codigo)
+boton_analizar.place(x=150, y=490)
+
+boton_borrar = tk.Button(ventana, text="Borrar", font=("Arial", 12), bg="#121b29", fg="red", command=lambda: entrada_texto.delete(1.0, tk.END))
+boton_borrar.place(x=650, y=490)
+
+ventana.mainloop()
